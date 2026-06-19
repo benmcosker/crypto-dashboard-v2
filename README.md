@@ -1,5 +1,7 @@
 # Crypto Dashboard (v2)
 
+[![CI](https://github.com/benmcosker/crypto-dashboard-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/benmcosker/crypto-dashboard-v2/actions/workflows/ci.yml)
+
 A real-time cryptocurrency market dashboard built on a **Java Spring Boot** backend and an **Angular + Angular Material** frontend, powered by the live [CoinGecko API](https://docs.coingecko.com/). Successor to the [React/Go v1](https://github.com/benmcosker/crypto-dashboard).
 
 It surfaces five live metrics, all filterable by time period (**Today / Last week / Last month / Last quarter**):
@@ -16,6 +18,7 @@ It surfaces five live metrics, all filterable by time period (**Today / Last wee
 
 ## Table of contents
 
+- [Screenshots](#screenshots)
 - [How it works](#how-it-works)
 - [Time-period behavior](#time-period-behavior)
 - [Prerequisites](#prerequisites)
@@ -24,9 +27,34 @@ It surfaces five live metrics, all filterable by time period (**Today / Last wee
 - [Running the app](#running-the-app)
 - [Running the tests](#running-the-tests)
 - [Production build](#production-build)
+- [Continuous integration](#continuous-integration)
 - [API reference](#api-reference)
 - [Project structure](#project-structure)
 - [Troubleshooting](#troubleshooting)
+
+---
+
+## Screenshots
+
+**Dashboard overview** — all five metrics on one screen, with a time-period filter.
+
+![Crypto Dashboard overview](docs/screenshots/dashboard-overview.png)
+
+**Time-period filtering** — switching to *Last quarter* re-scales the price-history
+chart to 90 days and updates the table's change column to the matching window.
+
+![Time-period filtering (Last quarter)](docs/screenshots/price-history.png)
+
+**Graceful error handling** — when the backend or upstream API is unavailable, each
+widget shows an inline message with a Retry action, plus a single global toast.
+
+![Error and retry states](docs/screenshots/error-handling.png)
+
+**Responsive layout** — the dashboard reflows to a single column on small screens.
+
+<p align="center">
+  <img src="docs/screenshots/responsive-mobile.png" alt="Responsive mobile layout" width="320">
+</p>
 
 ---
 
@@ -192,6 +220,32 @@ npx ng test --no-watch --browsers=ChromeHeadless  # one-shot / CI
 Covers the formatters, the `ApiError` mapping, the percent-change component, and
 the period-filter interaction.
 
+### End-to-end (Cypress)
+
+E2E specs drive the real UI in a browser with all `/api/*` calls stubbed via
+`cy.intercept`, so they're fast and deterministic — the Spring Boot backend
+doesn't need to run.
+
+```bash
+cd frontend
+npm run e2e             # starts the dev server, runs Cypress headlessly, exits
+npm run cy:open        # interactive runner (dev server must already be running)
+```
+
+Specs live in `frontend/cypress/e2e/`:
+
+- **`happy.cy.ts`** — all five widgets render with data; the price chart defaults
+  to Bitcoin / Last week; the time-period filter refetches the chart and switches
+  the table's change column; selecting a coin row or a trending coin updates the
+  chart.
+- **`sad.cy.ts`** — inline error + Retry on every widget for a 500; the global
+  error toast; a 429 rate-limit warning; a network failure; Retry recovery;
+  single-widget failure isolation; and the chart's empty-data state.
+
+Stub the API with `cy.stubHappy()` (in `cypress/support/commands.ts`) for the
+success case, or override individual endpoints with `cy.intercept(...)` for
+failures — fixtures live in `cypress/fixtures/`.
+
 ---
 
 ## Production build
@@ -214,6 +268,17 @@ java -jar target/backend-0.0.1-SNAPSHOT.jar    # reads ../.env
 For deployment, serve `frontend/dist/frontend/` from any static host and point
 the frontend at your backend. Ensure the backend's `ALLOWED_ORIGIN` matches the
 static site's origin.
+
+---
+
+## Continuous integration
+
+Every push and pull request to `main` runs
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml):
+
+- **Backend** — `./mvnw -B test` (JUnit) on JDK 25.
+- **Frontend** — `npm ci`, `npm run build`, and `ng test` (headless Chrome).
+- **E2E** — Cypress runs the `happy` and `sad` specs against the dev server.
 
 ---
 
@@ -263,6 +328,11 @@ crypto-dashboard-v2/
 └── frontend/                  # Angular 20 + Angular Material + Chart.js
     ├── angular.json           # dev server :5173 + /api proxy
     ├── proxy.conf.json        # /api -> http://localhost:8080
+    ├── cypress.config.ts      # Cypress E2E config
+    ├── cypress/
+    │   ├── e2e/               # happy.cy.ts + sad.cy.ts
+    │   ├── fixtures/          # stubbed API responses
+    │   └── support/           # commands (cy.stubHappy) + setup
     └── src/
         ├── styles.scss        # blue/yellow/white Angular Material (M3) theme
         └── app/

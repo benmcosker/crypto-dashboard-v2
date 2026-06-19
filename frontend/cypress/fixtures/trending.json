@@ -1,0 +1,22 @@
+{
+  "coins": [
+    {
+      "item": {
+        "id": "popcat",
+        "name": "Popcat",
+        "symbol": "POPCAT",
+        "thumb": "https://example.com/popcat.png",
+        "data": { "price_change_percentage_24h": { "usd": 12.3 } }
+      }
+    },
+    {
+      "item": {
+        "id": "dogwifhat",
+        "name": "dogwifhat",
+        "symbol": "WIF",
+        "thumb": "https://example.com/wif.png",
+        "data": { "price_change_percentage_24h": { "usd": -4.2 } }
+      }
+    }
+  ]
+}
