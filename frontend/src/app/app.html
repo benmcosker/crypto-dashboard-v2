@@ -1,0 +1,26 @@
+<mat-toolbar class="bar">
+  <mat-icon class="logo">currency_bitcoin</mat-icon>
+  <span class="title">Crypto Dashboard</span>
+  <span class="spacer"></span>
+  <app-period-filter [value]="period()" (periodChange)="period.set($event)" />
+</mat-toolbar>
+
+<main class="container">
+  <section class="overview">
+    <app-market-overview />
+  </section>
+
+  <div class="grid">
+    <div class="col">
+      <app-price-chart [coinId]="selectedCoin()" [period]="period()" />
+      <app-live-prices
+        [period]="period()"
+        [selectedCoin]="selectedCoin()"
+        (selectCoin)="selectedCoin.set($event)" />
+    </div>
+    <div class="col">
+      <app-trending (selectCoin)="selectedCoin.set($event)" />
+      <app-exchange-volume />
+    </div>
+  </div>
+</main>

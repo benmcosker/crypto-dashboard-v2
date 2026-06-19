@@ -1,0 +1,48 @@
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  color: #fff;
+  background: linear-gradient(90deg, #0d47a1 0%, #1565c0 100%);
+  gap: 12px;
+}
+
+.logo {
+  color: #ffeb3b;
+}
+
+.title {
+  font-weight: 700;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.overview {
+  margin-bottom: 24px;
+}
+
+.grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 2fr 1fr;
+}
+
+.col {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
