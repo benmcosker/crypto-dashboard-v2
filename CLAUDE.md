@@ -109,6 +109,10 @@ cd backend
 cd frontend
 npm test                                          # interactive (watch)
 npx ng test --no-watch --browsers=ChromeHeadless  # one-shot / CI
+
+# Frontend E2E — Cypress (happy + sad paths, /api/* stubbed; backend not needed)
+cd frontend
+npm run e2e                                        # boots dev server, runs Cypress, exits
 ```
 
 ## Build (production)
